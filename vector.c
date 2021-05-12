@@ -19,22 +19,26 @@ int vectorSize(struct Vector *v){
     return v->size;
 }
 
+int vectorCapacity(Vector *v){
+    return v->capacity;
+}
+
 void *vectorValue(struct Vector *v, int index){
     return v->vector[index];
 }
 
 void *vectorBack(struct Vector *v){
-    return v->vector[v->size-1];
+    return vectorValue(v, vectorSize(v)-1);
 }
 
 bool vectorEmpty(struct Vector *v){
-    return (v->size == 0);
+    return (vectorSize(v) == 0);
 }
 
 void vectorPushBack(struct Vector *v, void *obj){
-    if(v->size == v->capacity)
+    if(vectorSize(v) == vectorCapacity(v))
         vectorResize(v);
-    v->vector[v->size] = obj;
+    vectorSet(v, vectorSize(v), obj);
     v->size += 1;
 }
 
@@ -43,13 +47,19 @@ void vectorPopBack(struct Vector *v){
 }
 
 void vectorRemove(Vector *v, void *obj){
-    for(int i=0; i<vectorSize(v)-1; i++){
+    int new_good_index = 0;
+    for(int i=0; i<vectorSize(v); i++){
         if(vectorValue(v, i) == obj){
-            v->vector[i] = v->vector[i+1];
-            v->vector[i+1] = obj;
+            new_good_index = i;
+            while(new_good_index < vectorSize(v) && vectorValue(v, new_good_index) == obj)
+                new_good_index++;
+            if(new_good_index == vectorSize(v))
+                break;
+            vectorSet(v, i, vectorValue(v, new_good_index));
+            vectorSet(v, new_good_index, obj);
         }
     }
-    if(!vectorEmpty(v) && vectorBack(v) == obj)
+    while(!vectorEmpty(v) && vectorBack(v) == obj)
         vectorPopBack(v);
 }
 

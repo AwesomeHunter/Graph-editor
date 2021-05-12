@@ -13,6 +13,7 @@ Vector vectorCreate();
 void vectorResize(Vector *v);
 
 int vectorSize(Vector *v);
+int vectorCapacity(Vector *v);
 void *vectorValue(Vector *v, int index);
 void *vectorBack(Vector *v);
 
