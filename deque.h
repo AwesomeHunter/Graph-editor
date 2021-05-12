@@ -2,7 +2,6 @@
 #define H_DEQUE
 
 #include <stdbool.h>
-#include <stdlib.h>
 
 typedef struct Node{
     struct Node *prev, *next;

@@ -1,5 +1,7 @@
 #include "deque.h"
 
+#include <stdlib.h>
+
 Deque dequeCreate(){
     Deque q;
     q.front = NULL;

@@ -1,5 +1,7 @@
 #include "vertex.h"
 
+#include <stdlib.h>
+
 Vertex *vertexCreate(int id, int weight, Point position){
     Vertex *vertex = malloc(sizeof(Vertex));
     vertex->id = id;
@@ -55,7 +57,7 @@ void vertexAddEdge(Vertex *v, Edge *e){
 }
 
 void vertexRemoveEdge(Vertex *v, Edge *e){
-    vectorErase(&v->adj_list, e);
+    vectorRemove(&v->adj_list, e);
 }
 
 void vertexDestroy(Vertex *v){

@@ -211,7 +211,7 @@ void clickedDrawingAreaSignal(GtkWidget *widget, GdkEventButton *event, gpointer
             }
             if(found){
                 vertexSetColor(vertex, NORMAL_VERTEX);
-                vectorErase(&data->active_vertices, vertex);
+                vectorRemove(&data->active_vertices, vertex);
             }else{
                 data->mouse_pressed = true;
                 data->delta_mouse_pos = subtrPoint(vertexGetPosition(vertex), mouse);
@@ -227,7 +227,7 @@ void clickedDrawingAreaSignal(GtkWidget *widget, GdkEventButton *event, gpointer
                 }
                 if(found){
                     edgeSetColor(edge, NORMAL_EDGE);
-                    vectorErase(&data->active_edges, edge);
+                    vectorRemove(&data->active_edges, edge);
                 }else{
                     selectEdge(edge, data);
                 }
@@ -295,7 +295,7 @@ void selectVertexSignal(GtkWidget *widget, gpointer data_pointer){
             }
             if(found){
                 vertexSetColor(vertex, NORMAL_VERTEX);
-                vectorErase(&data->active_vertices, vertex);
+                vectorRemove(&data->active_vertices, vertex);
             }else{
                 if(vertex){
                     selectVertex(vertex, data);
@@ -331,7 +331,7 @@ void selectEdgeSignal(GtkWidget *widget, gpointer data_pointer){
             }
             if(found){
                 edgeSetColor(edge, NORMAL_EDGE);
-                vectorErase(&data->active_edges, edge);
+                vectorRemove(&data->active_edges, edge);
             }else{
                 if(edge){
                     selectEdge(edge, data);

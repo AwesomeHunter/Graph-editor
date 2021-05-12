@@ -1,9 +1,6 @@
 #ifndef H_VERTEX
 #define H_VERTEX
 
-#include <stdlib.h>
-#include <stdio.h>
-
 #include "edge.h"
 #include "vector.h"
 #include "colors.h"
@@ -15,8 +12,11 @@ typedef struct Vertex{
     Vector adj_list;
     Color color;
 } Vertex;
+
 typedef struct Edge Edge;
+
 Vertex *vertexCreate(int id, int weight, Point position);
+
 int vertexGetId(Vertex *v);
 int vertexGetWeight(Vertex *v);
 Point vertexGetPosition(Vertex *v);

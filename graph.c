@@ -55,7 +55,7 @@ void addEdge(Graph *g, int id_begin, int id_end, int weight){
 void deleteEdge(Graph *g, Edge *e){
     Vertex *begin = edgeGetBegin(e);
     vertexRemoveEdge(begin, e);
-    vectorErase(&g->edges, e);
+    vectorRemove(&g->edges, e);
     free(e);
 }
 
@@ -84,7 +84,7 @@ void deleteVertex(Graph *g, Vertex *vertex){
         else
             edgeDestroy(edge);
     }
-    vectorErase(&g->vertices, vertex);
+    vectorRemove(&g->vertices, vertex);
     vertexDestroy(vertex);
     vectorDestroy(&g->edges);
     g->edges = new_edges;
