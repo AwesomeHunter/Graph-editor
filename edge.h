@@ -3,27 +3,27 @@
 
 #include <stdlib.h>
 
-#include "vertex.h"
 #include "colors.h"
 
-typedef struct Vertex Vertex;
 typedef struct Edge{
     int id, weight;
-    Vertex *begin, *end;
+    int begin, end;
     Color color;
 } Edge;
-Edge *edgeCreate(int id, int weight, Vertex *begin, Vertex *end);
+
+Edge *edgeCreate(int id, int weight, int begin_id, int end_id);
+
 int edgeGetId(Edge *e);
 int edgeGetWeight(Edge *e);
-Vertex *edgeGetBegin(Edge *e);
-Vertex *edgeGetEnd(Edge *e);
+int edgeGetBegin(Edge *e);
+int edgeGetEnd(Edge *e);
 Color edgeGetColor(Edge *e);
 
 void edgeSetId(Edge *e, int id);
 void edgeSetColor(Edge *e, Color c);
 void edgeSetWeight(Edge *e, int weight);
-void edgeSetBegin(Edge *e, Vertex *begin);
-void edgeSetEnd(Edge *e, Vertex *end);
+void edgeSetBegin(Edge *e, int begin);
+void edgeSetEnd(Edge *e, int end);
 
 void edgeDestroy(Edge *e);
 

@@ -7,7 +7,7 @@ Vertex *vertexCreate(int id, int weight, Point position){
     vertex->id = id;
     vertex->weight = weight;
     vertex->position = position;
-    vertex->adj_list = vectorCreate();
+    vertex->adj = g_array_new(FALSE, FALSE, sizeof(int));
     vertex->color = NORMAL_VERTEX;
     return vertex;
 }
@@ -28,8 +28,8 @@ Color vertexGetColor(Vertex *v){
     return v->color;
 }
 
-Vector vertexGetAdjList(Vertex *v){
-    return v->adj_list;
+GArray *vertexGetAdjList(Vertex *v){
+    return v->adj;
 }
 
 void vertexSetId(Vertex *v, int id){
@@ -44,23 +44,26 @@ void vertexSetPosition(Vertex *v, Point position){
     v->position = position;
 }
 
-void vertexSetAdjList(Vertex *v, Vector new_adj){
-    v->adj_list = new_adj;
+void vertexSetAdjList(Vertex *v, GArray *new_adj){
+    g_array_free(v->adj, FALSE);
+    v->adj = new_adj;
 }
 
 void vertexSetColor(Vertex *v, Color c){
     v->color = c;
 }
 
-void vertexAddEdge(Vertex *v, Edge *e){
-    vectorPushBack(&v->adj_list, e);
+void vertexAddEdge(Vertex *v, int edge_id){
+    g_array_append_val(v->adj, edge_id);
 }
 
-void vertexRemoveEdge(Vertex *v, Edge *e){
-    vectorRemove(&v->adj_list, e);
+void vertexRemoveEdge(Vertex *v, int edge_id){
+    for(int i=0;i<v->adj->len;i++)
+        if(g_array_index(v->adj, int, i) == edge_id)
+            g_array_remove_index(v->adj, i);
 }
 
 void vertexDestroy(Vertex *v){
-    vectorDestroy(&v->adj_list);
+    g_array_free(v->adj, FALSE);
     free(v);
 }
