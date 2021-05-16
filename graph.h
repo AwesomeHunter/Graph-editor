@@ -1,28 +1,27 @@
 #ifndef H_GRAPH
 #define H_GRAPH
 
-#include <stdio.h>
+#include <gmodule.h>
 
 #include "edge.h"
 #include "vertex.h"
-#include "vector.h"
 #include "point.h"
 
 typedef struct Graph{
-    Vector vertices;
-    Vector edges;
+    GHashTable *vertices;
+    GHashTable *edges;
     int vertex_id, edge_id;
 } Graph;
 
 Graph createGraph();
-Vector getVertices(Graph* g);
-Vector getEdges(Graph* g);
-Vertex *vertexFindById(Vector v, int id);
-Edge *edgeFindById(Vector v, int id);
+GHashTable *getVertices(Graph* g);
+GHashTable *getEdges(Graph* g);
+Vertex *getVertexById(Graph *g, int id);
+Edge *getEdgeById(Graph *g, int id);
 void addVertex(Graph *g, Point position, int weight);
-void deleteVertex(Graph *g, Vertex *v);
-void addEdge(Graph *g, int id_begin, int id_end, int weight);
-void deleteEdge(Graph *g, Edge *e);
+void deleteVertex(Graph *g, int v_id);
+void addEdge(Graph *g, int begin_id, int end_id, int weight);
+void deleteEdge(Graph *g, int e_id);
 void destroyGraph(Graph *g);
 
 #endif
