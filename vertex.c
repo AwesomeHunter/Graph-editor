@@ -2,7 +2,7 @@
 
 #include <stdlib.h>
 
-Vertex *vertexCreate(int id, int weight, Point position){
+Vertex *vertexCreate(int id, int weight, Vector2 position){
     Vertex *vertex = malloc(sizeof(Vertex));
     vertex->id = id;
     vertex->weight = weight;
@@ -20,7 +20,7 @@ int vertexGetWeight(Vertex *v){
     return v->weight;
 }
 
-Point vertexGetPosition(Vertex *v){
+Vector2 vertexGetPosition(Vertex *v){
     return v->position;
 }
 
@@ -40,7 +40,7 @@ void vertexSetWeight(Vertex *v, int weight){
     v->weight = weight;
 }
 
-void vertexSetPosition(Vertex *v, Point position){
+void vertexSetPosition(Vertex *v, Vector2 position){
     v->position = position;
 }
 

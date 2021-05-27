@@ -1,5 +1,7 @@
 #include "edge.h"
 
+#include <stdlib.h>
+
 Edge *edgeCreate(int id, int weight, int begin_id, int end_id){
     Edge *edge = malloc(sizeof(Edge));
     edge->begin = begin_id;

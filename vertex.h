@@ -2,28 +2,28 @@
 #define H_VERTEX
 
 #include "colors.h"
-#include "point.h"
+#include "vector2.h"
 
 #include <gmodule.h>
 
 typedef struct Vertex{
     int id, weight;
-    Point position;
+    Vector2 position;
     GArray *adj;
     Color color;
 } Vertex;
 
-Vertex *vertexCreate(int id, int weight, Point position);
+Vertex *vertexCreate(int id, int weight, Vector2 position);
 
 int vertexGetId(Vertex *v);
 int vertexGetWeight(Vertex *v);
-Point vertexGetPosition(Vertex *v);
+Vector2 vertexGetPosition(Vertex *v);
 Color vertexGetColor(Vertex *v);
 GArray *vertexGetAdjList(Vertex *v);
 
 void vertexSetId(Vertex *v, int id);
 void vertexSetWeight(Vertex *v, int weight);
-void vertexSetPosition(Vertex *v, Point position);
+void vertexSetPosition(Vertex *v, Vector2 position);
 void vertexSetColor(Vertex *v, Color c);
 void vertexSetAdjList(Vertex *v, GArray *new_adj);
 void vertexAddEdge(Vertex *v, int edge_id);

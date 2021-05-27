@@ -1,8 +1,6 @@
 #ifndef H_EDGE
 #define H_EDGE
 
-#include <stdlib.h>
-
 #include "colors.h"
 
 typedef struct Edge{
