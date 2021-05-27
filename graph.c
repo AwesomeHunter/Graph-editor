@@ -1,7 +1,7 @@
 #include "graph.h"
 
-struct Graph createGraph(){
-    struct Graph graph;
+Graph createGraph(){
+    Graph graph;
     graph.vertices = g_hash_table_new_full(g_int_hash, g_int_equal, NULL, vertexDestroy);
     graph.edges = g_hash_table_new_full(g_int_hash, g_int_equal, NULL, edgeDestroy);
     graph.vertex_id = 0;
@@ -25,13 +25,13 @@ Edge *getEdgeById(Graph *g, int id){
     return g_hash_table_lookup(g->edges, id);
 }
 
-void addVertex(Graph *g, Point position, int weight){
+void addVertex(Graph *g, Vector2 position, int weight){
     Vertex *vertex = vertexCreate(g->vertex_id, weight, position);
     g_hash_table_insert(g->vertices, g->vertex_id, vertex);
     g->vertex_id++;
 }
 
-GHRFunc is_edge_adjacent(gpointer key, gpointer value, gpointer user_data){
+GHRFunc isEdgeAdjacent(gpointer key, gpointer value, gpointer user_data){
     Edge *e = value;
     int vertex_id = GPOINTER_TO_INT(user_data);
     return (edgeGetBegin(e) == vertex_id || edgeGetEnd(e) == vertex_id);
@@ -54,7 +54,7 @@ void deleteVertex(Graph *g, int v_id){
         }
         vertexSetAdjList(value, new_adj);
     }
-    g_hash_table_foreach_remove(g->edges, is_edge_adjacent, GINT_TO_POINTER(v_id));
+    g_hash_table_foreach_remove(g->edges, isEdgeAdjacent, GINT_TO_POINTER(v_id));
     g_hash_table_remove(g->vertices, v_id);
 }
 
