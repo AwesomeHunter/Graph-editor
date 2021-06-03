@@ -20,7 +20,7 @@ int edgeGetWeight(Edge *e){
     return e->weight;
 }
 
-int dgeGetBegin(Edge *e){
+int edgeGetBegin(Edge *e){
     return e->begin;
 }
 
@@ -52,6 +52,7 @@ void edgeSetEnd(Edge *e, int end){
     e->end = end;
 }
 
-void edgeDestroy(Edge *e){
+void edgeDestroy(gpointer data){
+    Edge *e = data;
     free(e);
 }

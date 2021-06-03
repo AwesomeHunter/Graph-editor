@@ -2,6 +2,7 @@
 #define H_EDGE
 
 #include "colors.h"
+#include <glib.h>
 
 typedef struct Edge{
     int id, weight;
@@ -23,6 +24,6 @@ void edgeSetWeight(Edge *e, int weight);
 void edgeSetBegin(Edge *e, int begin);
 void edgeSetEnd(Edge *e, int end);
 
-void edgeDestroy(Edge *e);
+void edgeDestroy(gpointer e);
 
 #endif

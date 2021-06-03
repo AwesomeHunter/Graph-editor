@@ -45,7 +45,7 @@ void vertexSetPosition(Vertex *v, Vector2 position){
 }
 
 void vertexSetAdjList(Vertex *v, GArray *new_adj){
-    g_array_free(v->adj, FALSE);
+    g_array_free(v->adj, TRUE);
     v->adj = new_adj;
 }
 
@@ -58,12 +58,13 @@ void vertexAddEdge(Vertex *v, int edge_id){
 }
 
 void vertexRemoveEdge(Vertex *v, int edge_id){
-    for(int i=0;i<v->adj->len;i++)
+    for(int i=0;i<(int)v->adj->len;i++)
         if(g_array_index(v->adj, int, i) == edge_id)
-            g_array_remove_index(v->adj, i);
+            g_array_remove_index(v->adj, (unsigned int)i);
 }
 
-void vertexDestroy(Vertex *v){
-    g_array_free(v->adj, FALSE);
+void vertexDestroy(gpointer data){
+    Vertex *v = data;
+    g_array_free(v->adj, TRUE);
     free(v);
 }

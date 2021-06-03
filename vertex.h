@@ -29,6 +29,6 @@ void vertexSetAdjList(Vertex *v, GArray *new_adj);
 void vertexAddEdge(Vertex *v, int edge_id);
 void vertexRemoveEdge(Vertex *v, int edge_id);
 
-void vertexDestroy(Vertex *v);
+void vertexDestroy(gpointer v);
 
 #endif
