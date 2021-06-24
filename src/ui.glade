@@ -33,7 +33,7 @@
               <object class="GtkEntry" id="vertex_id_entry">
                 <property name="visible">True</property>
                 <property name="can_focus">True</property>
-                <property name="max_length">4</property>
+                <property name="max_length">5</property>
                 <property name="input_purpose">number</property>
               </object>
               <packing>
@@ -45,7 +45,7 @@
               <object class="GtkEntry" id="edge_id_entry">
                 <property name="visible">True</property>
                 <property name="can_focus">True</property>
-                <property name="max_length">4</property>
+                <property name="max_length">5</property>
                 <property name="input_purpose">number</property>
               </object>
               <packing>
@@ -103,7 +103,7 @@
               </packing>
             </child>
             <child>
-              <object class="GtkButton" id="load_graph_button">
+              <object class="GtkButton" id="button_load_graph">
                 <property name="label" translatable="yes">load graph</property>
                 <property name="visible">True</property>
                 <property name="can_focus">True</property>
@@ -115,7 +115,7 @@
               </packing>
             </child>
             <child>
-              <object class="GtkButton" id="save_graph_button">
+              <object class="GtkButton" id="button_save_graph">
                 <property name="label" translatable="yes">save graph</property>
                 <property name="visible">True</property>
                 <property name="can_focus">True</property>
@@ -124,16 +124,6 @@
               <packing>
                 <property name="left_attach">1</property>
                 <property name="top_attach">5</property>
-              </packing>
-            </child>
-            <child>
-              <object class="GtkComboBoxText" id="load_graph_combo">
-                <property name="visible">True</property>
-                <property name="can_focus">False</property>
-              </object>
-              <packing>
-                <property name="left_attach">0</property>
-                <property name="top_attach">4</property>
               </packing>
             </child>
             <child>
@@ -151,7 +141,7 @@
               <object class="GtkEntry" id="weight_entry">
                 <property name="visible">True</property>
                 <property name="can_focus">True</property>
-                <property name="max_length">7</property>
+                <property name="max_length">5</property>
                 <property name="input_purpose">number</property>
               </object>
               <packing>
@@ -196,6 +186,12 @@
               <object class="GtkComboBoxText" id="algorithms_combo">
                 <property name="visible">True</property>
                 <property name="can_focus">False</property>
+                <property name="active">0</property>
+                <items>
+                  <item id="0" translatable="yes">DFS</item>
+                  <item id="1" translatable="yes">BFS</item>
+                  <item id="2" translatable="yes">DIJKSTRA</item>
+                </items>
               </object>
               <packing>
                 <property name="left_attach">0</property>
@@ -229,6 +225,17 @@
                 <property name="left_attach">0</property>
                 <property name="top_attach">7</property>
                 <property name="width">2</property>
+              </packing>
+            </child>
+            <child>
+              <object class="GtkEntry" id="load_graph_entry">
+                <property name="visible">True</property>
+                <property name="can_focus">True</property>
+                <property name="max_length">10</property>
+              </object>
+              <packing>
+                <property name="left_attach">0</property>
+                <property name="top_attach">4</property>
               </packing>
             </child>
           </object>

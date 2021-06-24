@@ -1,7 +1,7 @@
 #ifndef H_GRAPH
 #define H_GRAPH
 
-#include <gmodule.h>
+#include <gtk/gtk.h>
 
 #include "edge.h"
 #include "vertex.h"
@@ -19,7 +19,6 @@ GHashTable *getEdges(Graph* g);
 Vertex *getVertexById(Graph *g, int id);
 Edge *getEdgeById(Graph *g, int id);
 int addVertex(Graph *g, Vector2 position, int weight);
-gboolean isEdgeAdjacent(gpointer key, gpointer value, gpointer user_data);
 void deleteVertex(Graph *g, int v_id);
 int addEdge(Graph *g, int id_begin, int id_end, int weight);
 void deleteEdge(Graph *g, int e_id);

@@ -22,10 +22,10 @@ void connectSignals(GUIData *data){
     g_signal_connect(gtk_builder_get_object(data->builder, "button_delete_selected"), "clicked", G_CALLBACK(deleteSelectedSignal), data);
     g_signal_connect(gtk_builder_get_object(data->builder, "button_set_weight"),      "clicked", G_CALLBACK(setWeightSignal),      data);
     g_signal_connect(gtk_builder_get_object(data->builder, "button_clear_text_view"), "clicked", G_CALLBACK(clearConsoleSignal),   data);
-    // g_signal_connect(gtk_builder_get_object(data->builder, "button_load_graph"), "clicked", G_CALLBACK(loadGraph),            data);
-    // g_signal_connect(gtk_builder_get_object(data->builder, "button_save_graph"), "clicked", G_CALLBACK(saveGraph),            data);
-    // g_signal_connect(gtk_builder_get_object(data->builder, "button_algorithms"), "clicked", G_CALLBACK(runAlgorithm),         data);
+    g_signal_connect(gtk_builder_get_object(data->builder, "button_load_graph"),      "clicked", G_CALLBACK(loadGraphSignal),      data);
+    g_signal_connect(gtk_builder_get_object(data->builder, "button_save_graph"),      "clicked", G_CALLBACK(saveGraphSignal),      data);
     g_signal_connect(gtk_builder_get_object(data->builder, "mode_combo"),             "changed", G_CALLBACK(changeMode),           data);
+    g_signal_connect(gtk_builder_get_object(data->builder, "button_algorithms"),      "clicked", G_CALLBACK(runAlgorithmSignal),   data);
 }
 
 void createTextMark(GUIData *data){
@@ -37,7 +37,7 @@ void createTextMark(GUIData *data){
 }
 
 void initGUIData(GUIData *data, Graph *g){
-    GtkBuilder *builder = gtk_builder_new_from_file("ui.glade");
+    GtkBuilder *builder = gtk_builder_new_from_file("src/ui.glade");
     GtkWidget *drawing_area = GTK_WIDGET(gtk_builder_get_object(builder, "drawing_area"));
     Vector2 drawing_area_size = {gtk_widget_get_allocated_width(drawing_area), gtk_widget_get_allocated_height(drawing_area)};
     data->graph                      = g;
@@ -48,10 +48,10 @@ void initGUIData(GUIData *data, Graph *g){
     data->mouse_position             = (Vector2){0, 0};
     data->active_mode                = SELECT_MODE;
     data->mouse_pressed              = false;
-    data->holded_vertex              = NULL;
     data->cr                         = NULL;
     data->text_mark                  = NULL;
     data->previous_drawing_area_size = drawing_area_size;
+    data->algorithm                  = (Algorithm){NULL, false, NULL, NULL};
     createTextMark(data);
     connectSignals(data);
 }

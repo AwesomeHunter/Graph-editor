@@ -1,10 +1,11 @@
 #include "callbacks.h"
 
 #include <stdbool.h>
-#include <gmodule.h>
-#include "gui.h"
-#include "vector2.h"
 #include <math.h>
+#include "gui.h"
+#include "graph.h"
+#include "vector2.h"
+#include "algorithm.h"
 
 bool isNumber(const gchar *number){
     for(int i=0;i<(int)strlen(number);i++){
@@ -160,6 +161,8 @@ Edge *getEdgeOnTop(GArray *clicked_edges){
 
 void clearConsoleSignal(GtkWidget *widget, gpointer user_data){
     GUIData *data = user_data;
+    if(data->algorithm.running)
+        return;
     GtkTextBuffer *buffer = gtk_text_view_get_buffer(GTK_TEXT_VIEW(gtk_builder_get_object(data->builder, "console")));
     gtk_text_buffer_set_text(buffer, "", 0);
     (void)widget;
@@ -167,8 +170,8 @@ void clearConsoleSignal(GtkWidget *widget, gpointer user_data){
 
 void selectEdgeSignal(GtkWidget *widget, gpointer user_data){
     GUIData *data = user_data;
-    // if(data->algorithm->running)
-    //     return;
+    if(data->algorithm.running)
+        return;
     const gchar *text = gtk_entry_get_text(GTK_ENTRY(gtk_builder_get_object(data->builder, "edge_id_entry")));
     if(isNumber(text) && data->active_mode == SELECT_MODE){
         int id = atoi(text);
@@ -184,8 +187,8 @@ void selectEdgeSignal(GtkWidget *widget, gpointer user_data){
 
 void selectVertexSignal(GtkWidget *widget, gpointer user_data){
     GUIData *data = user_data;
-    // if(data->algorithm->running)
-    //     return;
+    if(data->algorithm.running)
+        return;
     const gchar *text = gtk_entry_get_text(GTK_ENTRY(gtk_builder_get_object(data->builder, "vertex_id_entry")));
     if(isNumber(text) && data->active_mode == SELECT_MODE){
         int id = atoi(text);
@@ -201,8 +204,8 @@ void selectVertexSignal(GtkWidget *widget, gpointer user_data){
 
 void setWeightSignal(GtkWidget *widget, gpointer user_data){
     GUIData *data = user_data;
-    // if(data->algorithm->running)
-    //     return;
+    if(data->algorithm.running)
+        return;
     const gchar *text = gtk_entry_get_text(GTK_ENTRY(gtk_builder_get_object(data->builder, "weight_entry")));
     if(isNumber(text)){
         int weight = atoi(text);
@@ -222,8 +225,8 @@ void setWeightSignal(GtkWidget *widget, gpointer user_data){
 
 void deleteSelectedSignal(GtkWidget *widget, gpointer user_data){
     GUIData *data = user_data;
-    // if(data->algorithm->running)
-    //     return;
+    if(data->algorithm.running)
+        return;
     Edge *edge = data->active_edge;
     Vertex *vertex = data->active_vertex;
     deselectActive(user_data);
@@ -241,8 +244,8 @@ void deleteSelectedSignal(GtkWidget *widget, gpointer user_data){
 
 void changeMode(GtkWidget *widget, gpointer user_data){
     GUIData *data = user_data;
-    // if(data->algorithm->running)
-    //     return;
+    if(data->algorithm.running)
+        return;
     deselectActive(data);
     gchar *mode = gtk_combo_box_text_get_active_text(GTK_COMBO_BOX_TEXT(gtk_builder_get_object(data->builder, "mode_combo")));
     if(g_strcmp0(mode, "select mode") == 0){
@@ -332,7 +335,7 @@ void getClickedObjects(Vertex **clicked_vertex, Edge **clicked_edge, gpointer us
 void buttonClickedSignal(GtkWidget *widget, GdkEventButton *event, gpointer user_data){
     GUIData *data = user_data;
     GdkEventMotion *ev = (GdkEventMotion *)event;
-    if(event->button != GDK_BUTTON_PRIMARY || event->type == GDK_2BUTTON_PRESS)// || data->algorithm->running)
+    if(event->button != GDK_BUTTON_PRIMARY || event->type == GDK_2BUTTON_PRESS || data->algorithm.running)
         return;
     data->mouse_position = (Vector2){ev->x, ev->y};
     data->mouse_pressed = true;
@@ -358,6 +361,8 @@ void buttonClickedSignal(GtkWidget *widget, GdkEventButton *event, gpointer user
 
 void mouseMovedSignal(GtkWidget *widget, GdkEventButton *event, gpointer user_data){
     GUIData *data = user_data;
+    if(data->algorithm.running)
+        return;
     GtkWidget *drawing_area = GTK_WIDGET(gtk_builder_get_object(data->builder, "drawing_area"));
     GdkEventMotion *ev = (GdkEventMotion *)event;
     data->mouse_position = (Vector2){ev->x, ev->y};
@@ -375,6 +380,8 @@ void mouseMovedSignal(GtkWidget *widget, GdkEventButton *event, gpointer user_da
 
 void buttonReleasedSignal(GtkWidget *widget, GdkEventButton *event, gpointer user_data){
     GUIData *data = user_data;
+    if(data->algorithm.running)
+        return;
     data->mouse_pressed = false;
     (void)widget, (void)event;
 }
@@ -487,5 +494,227 @@ void closeWindow(GtkWidget *widget, gpointer user_data){
     gtk_widget_destroy(GTK_WIDGET(gtk_builder_get_object(data->builder, "window")));
     g_object_unref(G_OBJECT(data->builder));
     gtk_main_quit();
+    (void)widget;
+}
+
+GHashTable *assignNewIds(gpointer user_data){
+    GUIData *data = user_data;
+    GHashTable *new_ids = g_hash_table_new(g_direct_hash, g_direct_equal);
+    GHashTableIter iter;
+    gpointer key, value;
+    g_hash_table_iter_init(&iter, getVertices(data->graph));
+    int id = 0;
+    while(g_hash_table_iter_next(&iter, &key, &value)){
+        g_hash_table_insert(new_ids, key, GINT_TO_POINTER(id));
+        id++;
+    }
+    return new_ids;
+}
+
+void insertEdgesToFile(FILE *file, GHashTable *new_ids, gpointer user_data){
+    GUIData *data = user_data;
+    GHashTableIter iter;
+    gpointer key, value;
+    g_hash_table_iter_init(&iter, getEdges(data->graph));
+    while(g_hash_table_iter_next(&iter, &key, &value)){
+        int begin_id = GPOINTER_TO_INT(g_hash_table_lookup(new_ids, GINT_TO_POINTER(edgeGetBegin(value)))) + 1;
+        int end_id = GPOINTER_TO_INT(g_hash_table_lookup(new_ids, GINT_TO_POINTER(edgeGetEnd(value)))) + 1;
+        int edge_weight = edgeGetWeight(value);
+        fprintf(file, "e %d %d %d\n", begin_id, end_id, edge_weight);
+    }
+}
+
+void saveVerticesInfo(const gchar *graph_name, GHashTable *new_ids, gpointer user_data){
+    GUIData *data = user_data;
+    gchar *path = g_strconcat("src/graphs/", graph_name, ".vertices", NULL);
+    FILE *file = fopen(path, "w");
+    g_free(path);
+    if(file){
+        GHashTableIter iter;
+        gpointer key, value;
+        g_hash_table_iter_init(&iter, getVertices(data->graph));
+        while(g_hash_table_iter_next(&iter, &key, &value)){
+            Vector2 pos = divVector2(vertexGetPosition(value), data->previous_drawing_area_size);
+            int id = GPOINTER_TO_INT(g_hash_table_lookup(new_ids, key)) + 1;
+            int weight = vertexGetWeight(value);
+            fprintf(file, "%d %f %f %d\n", id, pos.x, pos.y, weight);
+        }
+        fclose(file);
+    }
+}
+
+bool saveGraph(const gchar *graph_name, gpointer user_data){
+    GUIData *data = user_data;
+    gchar *path = g_strconcat("src/graphs/", graph_name, NULL);
+    FILE *file = fopen(path, "w");
+    g_free(path);
+    if(file){
+        deselectActive(user_data);
+        GHashTable *new_ids = assignNewIds(user_data);
+        int n_of_vertices = (int)g_hash_table_size(getVertices(data->graph));
+        int n_of_edges = (int)g_hash_table_size(getEdges(data->graph));
+        fprintf(file, "p edge %d %d\n", n_of_vertices, n_of_edges);
+        insertEdgesToFile(file, new_ids, user_data);
+        saveVerticesInfo(graph_name, new_ids, user_data);
+        g_hash_table_destroy(new_ids);
+        fclose(file);
+        return true;
+    }
+    return false;
+}
+
+void saveGraphSignal(GtkWidget *widget, gpointer user_data){
+    GUIData *data = user_data;
+    if(data->algorithm.running)
+        return;
+    const gchar *graph_name = gtk_entry_get_text(GTK_ENTRY(gtk_builder_get_object(data->builder, "save_graph_entry")));
+    if(g_strcmp0(graph_name, "") == 0){
+        insertTextToConsole("Error, text entry is empty\n", user_data);
+    }else if(saveGraph(graph_name, user_data)){
+        insertTextToConsole("Graph \"", user_data);
+        insertTextToConsole(graph_name, user_data);
+        insertTextToConsole("\" saved\n", user_data);
+    }else{
+        insertTextToConsole("Error, couldn't save graph\n", user_data);
+    }
+    gtk_widget_queue_draw(GTK_WIDGET(gtk_builder_get_object(data->builder, "drawing_area")));
+    (void)widget;
+}
+
+void readLine(char *buffer, char **output){
+    char *ptr = strtok(buffer, " \n");
+    int index = 0;
+    while(ptr){
+        output[index] = ptr;
+        ptr = strtok(NULL, " \n");
+        index++;
+    }
+    output[index] = "";
+}
+
+void loadGraphAddEdge(Graph* new_graph, char **output){
+    int begin = atoi(output[1]) - 1;
+    int end = atoi(output[2]) - 1;
+    int weight = 1;
+    if(g_strcmp0(output[3], "") != 0)
+        weight = atoi(output[3]);
+    addEdge(new_graph, begin, end, weight);
+}
+
+void loadGraphAddVertices(Graph* new_graph, char **output, gpointer user_data){
+    GUIData *data = user_data;
+    int n_of_vertices = atoi(output[2]);
+    double smaller_window_size = fmin(data->previous_drawing_area_size.x, data->previous_drawing_area_size.y);
+    double radius = smaller_window_size / 2.0 - 2.0 * data->vertex_radius;
+    Vector2 circle_mid = divScalar(data->previous_drawing_area_size, 2.0);
+    double angle_diff = 2.0 * G_PI / (double)n_of_vertices;
+    for(int i=0; i<n_of_vertices; i++){
+        Vector2 vertex_position = multScalar((Vector2){cos(i * angle_diff), sin(i * angle_diff)}, radius);
+        addVertex(new_graph, addVector2(circle_mid, vertex_position), 1);
+    }
+}
+
+void correctVertex(Graph* new_graph, char **output, gpointer user_data){
+    GUIData *data = user_data;
+    int id = atoi(output[0]) - 1;
+    double pos_x = atof(output[1]) * data->previous_drawing_area_size.x;
+    double pos_y = atof(output[2]) * data->previous_drawing_area_size.y;
+    int weight = atoi(output[3]);
+    Vertex *vertex = getVertexById(new_graph, id);
+    if(vertex){
+        vertexSetWeight(vertex, weight);
+        vertexSetPosition(vertex, (Vector2){pos_x, pos_y});
+    }
+}
+
+void correctNewGraphVertices(const gchar *graph_name, Graph* new_graph, gpointer user_data){
+    gchar *path = g_strconcat("src/graphs/", graph_name, ".vertices", NULL);
+    FILE *file = fopen(path, "r");
+    g_free(path);
+    if(file){
+        char buffer[255];
+        while(fgets(buffer, 255, file)){
+            char *file_line[10];
+            readLine(buffer, file_line);
+            correctVertex(new_graph, file_line, user_data);
+        }
+        fclose(file);
+    }
+}
+
+bool loadGraph(const gchar *graph_name, gpointer user_data){
+    GUIData *data = user_data;
+    gchar *path = g_strconcat("src/graphs/", graph_name, NULL);
+    FILE *file = fopen(path, "r");
+    g_free(path);
+    if(file){
+        deselectActive(user_data);
+        Graph new_graph = createGraph();
+        char buffer[255];
+        while(fgets(buffer, 255, file)){
+            char *file_line[10];
+            readLine(buffer, file_line);
+            if(g_strcmp0(file_line[0], "e") == 0){
+                loadGraphAddEdge(&new_graph, file_line);
+            }else if(g_strcmp0(file_line[0], "p") == 0){
+                loadGraphAddVertices(&new_graph, file_line, user_data);
+            }
+        }
+        correctNewGraphVertices(graph_name, &new_graph, user_data);
+        destroyGraph(data->graph);
+        *data->graph = new_graph;
+        fclose(file);
+        return true;
+    }
+    return false;
+}
+
+void loadGraphSignal(GtkWidget *widget, gpointer user_data){
+    GUIData *data = user_data;
+    if(data->algorithm.running)
+        return;
+    const gchar *graph_name = gtk_entry_get_text(GTK_ENTRY(gtk_builder_get_object(data->builder, "load_graph_entry")));
+    if(g_strcmp0(graph_name, "") == 0){
+        insertTextToConsole("Error, text entry is empty\n", user_data);
+    }else if(loadGraph(graph_name, user_data)){
+        insertTextToConsole("Graph \"", user_data);
+        insertTextToConsole(graph_name, user_data);
+        insertTextToConsole("\" loaded\n", user_data);
+    }else{
+        insertTextToConsole("Error, couldn't load graph\n", user_data);
+    }
+    gtk_widget_queue_draw(GTK_WIDGET(gtk_builder_get_object(data->builder, "drawing_area")));
+    (void)widget;
+}
+
+void runAlgorithmSignal(GtkWidget *widget, gpointer user_data){
+    GUIData *data = user_data;
+    if(data->algorithm.running)
+        return;
+    gchar *algorithm_name = gtk_combo_box_text_get_active_text(GTK_COMBO_BOX_TEXT(gtk_builder_get_object(data->builder, "algorithms_combo")));
+    if(data->active_vertex == NULL){
+        insertTextToConsole("No vertex selected\n", user_data);
+        return;
+    }else if(data->active_mode != SELECT_MODE){
+        insertTextToConsole("Choose select mode\n", user_data);
+        return;
+    }
+    int start = vertexGetId(data->active_vertex);
+    deselectActive(user_data);
+    if(g_strcmp0(algorithm_name, "DFS") == 0){
+        insertTextToConsole("Algorithm is running: DFS\n", user_data);
+        initAlgorithm(&data->algorithm, DFS, start, data->graph);
+        g_timeout_add(500, nextStep, user_data);
+    }else if(strcmp(algorithm_name, "BFS") == 0){
+        insertTextToConsole("Algorithm is running: BFS\n", user_data);
+        initAlgorithm(&data->algorithm, BFS, start, data->graph);
+        g_timeout_add(500, nextStep, user_data);
+    }else if(strcmp(algorithm_name, "DIJKSTRA") == 0){
+        insertTextToConsole("Algorithm is running: DIJKSTRA\n", data);
+        initAlgorithm(&data->algorithm, DIJKSTRA, start, data->graph);
+        g_timeout_add(500, nextStep, user_data);
+    }
+    g_free(algorithm_name);
+    gtk_widget_queue_draw(GTK_WIDGET(gtk_builder_get_object(data->builder, "drawing_area")));
     (void)widget;
 }

@@ -2,7 +2,7 @@
 #define H_EDGE
 
 #include "colors.h"
-#include <glib.h>
+#include <gtk/gtk.h>
 
 typedef struct Edge{
     int id, weight;

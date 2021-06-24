@@ -4,12 +4,9 @@
 #include <gtk/gtk.h>
 #include <cairo.h>
 #include <stdbool.h>
-
-// #include "algorithms.h"
 #include "vector2.h"
 #include "graph.h"
-#include "vertex.h"
-#include "edge.h"
+#include "algorithm.h"
 
 typedef enum Mode{
     SELECT_MODE,
@@ -27,11 +24,10 @@ typedef struct GUIData{
     Mode active_mode;
     cairo_t *cr;
     GtkTextMark *text_mark;
-    // Algorithm *algorithm;
     bool mouse_pressed;
-    Vertex *holded_vertex;
     Vector2 previous_drawing_area_size;
     Vector2 vertex_shift;
+    Algorithm algorithm;
 } GUIData;
 
 void GUI(int argc, char *argv[], Graph *g);

@@ -1,10 +1,9 @@
 #ifndef H_VERTEX
 #define H_VERTEX
 
+#include <gtk/gtk.h>
 #include "colors.h"
 #include "vector2.h"
-
-#include <gmodule.h>
 
 typedef struct Vertex{
     int id, weight;
