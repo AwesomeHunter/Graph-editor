@@ -1,2 +1,2 @@
-all: app.c vector.c heap.c point.c drawing.c gui.c algorithms.c graph.c deque.c edge.c vertex.c colors.c
-	gcc -g -xc -std=c11 -Wall -Wextra -Werror app.c -o app vector.c heap.c point.c drawing.c gui.c algorithms.c graph.c deque.c edge.c vertex.c colors.c -lm `pkg-config --cflags gtk+-3.0 --libs`
+all: src/main.c src/edge.c src/gui.c src/callbacks.c src/colors.c src/vector2.c src/vertex.c src/graph.c src/algorithm.c src/algorithms/dfs.c src/algorithms/bfs.c src/algorithms/dijkstra.c src/algorithms/utils.c
+	gcc @flags src/main.c -o main src/edge.c src/gui.c src/callbacks.c src/colors.c src/vector2.c src/vertex.c src/graph.c src/algorithm.c src/algorithms/dfs.c src/algorithms/bfs.c src/algorithms/dijkstra.c src/algorithms/utils.c -lm `pkg-config --cflags gtk+-3.0 --libs`

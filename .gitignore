@@ -1,1 +1,7 @@
 instrukcja.txt
+.vscode/
+unused/
+vgdump
+valgrind.sh
+ui.glade~
+main

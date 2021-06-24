@@ -1,9 +1,11 @@
 #include "edge.h"
 
-Edge *edgeCreate(int id, int weight, Vertex *begin, Vertex *end){
+#include <stdlib.h>
+
+Edge *edgeCreate(int id, int weight, int begin_id, int end_id){
     Edge *edge = malloc(sizeof(Edge));
-    edge->begin = begin;
-    edge->end = end;
+    edge->begin = begin_id;
+    edge->end = end_id;
     edge->id = id;
     edge->weight = weight;
     edge->color = NORMAL_EDGE;
@@ -18,11 +20,11 @@ int edgeGetWeight(Edge *e){
     return e->weight;
 }
 
-Vertex *edgeGetBegin(Edge *e){
+int edgeGetBegin(Edge *e){
     return e->begin;
 }
 
-Vertex *edgeGetEnd(Edge *e){
+int edgeGetEnd(Edge *e){
     return e->end;
 }
 
@@ -42,14 +44,15 @@ void edgeSetWeight(Edge *e, int weight){
     e->weight = weight;
 }
 
-void edgeSetBegin(Edge *e, Vertex *begin){
+void edgeSetBegin(Edge *e, int begin){
     e->begin = begin;
 }
 
-void edgeSetEnd(Edge *e, Vertex *end){
+void edgeSetEnd(Edge *e, int end){
     e->end = end;
 }
 
-void edgeDestroy(Edge *e){
+void edgeDestroy(gpointer data){
+    Edge *e = data;
     free(e);
 }
