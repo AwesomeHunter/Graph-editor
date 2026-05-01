@@ -12,13 +12,13 @@ A GUI application to create, edit, and visualize graphs.
 ## Previews
 
 ### Graph Editing
-<video src="./assets/edit.mp4" controls="controls" muted="muted"></video>
+https://github.com/user-attachments/assets/ced09334-b0d4-4432-8a58-ecfb542481f4
 
 ### Breadth-First Search (BFS)
-<video src="./assets/bfs.mp4" controls="controls" muted="muted"></video>
+https://github.com/user-attachments/assets/7584824f-f84d-479c-83fa-f626394e6eee
 
 ### Depth-First Search (DFS)
-<video src="./assets/dfs.mp4" controls="controls" muted="muted"></video>
+https://github.com/user-attachments/assets/844acadb-93fb-4114-b619-6c10927403d1
 
 ## Build Instructions
 
